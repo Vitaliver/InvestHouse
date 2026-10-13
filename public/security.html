@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Безопасность и данные — InvestHouse</title>
+  <meta name="description" content="Какие данные хранит InvestHouse, как защищено соединение и как уберечь себя от мошенников.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/shared.css">
+</head>
+<body data-page="security">
+
+<header class="header">
+  <div class="container">
+    <a href="/" class="logo">
+      <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd400" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M6 20v-6m6 6V9m6 11v-8"/></svg></span>
+      Invest<b>House</b>
+    </a>
+    <nav class="nav">
+      <a href="/#markets">Рынки</a>
+      <a href="/#accounts">Счета</a>
+      <a href="/security">Безопасность</a>
+      <a href="#qa">Вопросы</a>
+    </nav>
+    <div class="header-actions">
+      <a href="/terminal" class="btn btn-accent btn-sm">Открыть терминал</a>
+    </div>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Безопасность и данные</span>
+    <h1>Что мы храним,<br>а что <span class="hl">нет</span></h1>
+    <p>Простыми словами о том, как устроена защита InvestHouse, какие данные остаются у вас и как не попасться мошенникам.</p>
+  </div>
+</div>
+
+<section>
+  <div class="container doc">
+    <nav class="doc-nav">
+      <a href="#mode">Демо-режим</a>
+      <a href="#data">Какие данные мы храним</a>
+      <a href="#tech">Техническая защита</a>
+      <a href="#fraud">Защита от мошенников</a>
+      <a href="#risk">Риски торговли</a>
+      <a href="#report">Сообщить о проблеме</a>
+    </nav>
+    <div>
+      <section id="mode">
+        <h2>Демо-режим</h2>
+        <p>Сейчас InvestHouse — демонстрационная платформа. Это значит:</p>
+        <ul>
+          <li>мы <b>не принимаем деньги</b> и не проводим выплаты;</li>
+          <li>мы <b>не запрашиваем документы</b> — паспорт, селфи, подтверждение адреса;</li>
+          <li>котировки <b>симулированные</b> и не совпадают с реальными биржами;</li>
+          <li>баланс демо-счёта (10 000 USD) — виртуальный.</li>
+        </ul>
+      </section>
+
+      <section id="data">
+        <h2>Какие данные мы храним</h2>
+        <table class="check-table">
+          <thead><tr><th>Данные</th><th>Храним?</th><th>Где и зачем</th></tr></thead>
+          <tbody>
+            <tr><td>Имя, телефон, e-mail</td><td><span class="no">НЕТ</span></td><td>Регистрации нет, мы их не запрашиваем.</td></tr>
+            <tr><td>Паспорт и другие документы</td><td><span class="no">НЕТ</span></td><td>Верификации в демо-режиме нет.</td></tr>
+            <tr><td>Банковские карты, кошельки</td><td><span class="no">НЕТ</span></td><td>Платежей нет.</td></tr>
+            <tr><td>Демо-баланс, позиции, история</td><td><span class="yes">ДА</span></td><td>Только в вашем браузере (localStorage), на сервер не отправляются. Удаляются кнопкой «Сбросить» или очисткой данных сайта.</td></tr>
+            <tr><td>Рекламные и сторонние cookies</td><td><span class="no">НЕТ</span></td><td>На сайте нет рекламы, трекеров и внешней аналитики.</td></tr>
+            <tr><td>Технические логи сервера</td><td><span class="yes">ДА</span></td><td>Хостинг может вести стандартные журналы запросов (IP, время, адрес страницы) для работы и защиты от атак.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="tech">
+        <h2>Техническая защита</h2>
+        <ul>
+          <li><b>Content Security Policy.</b> Браузер выполняет только скрипты с нашего домена — внедрённый чужой код не запустится.</li>
+          <li><b>Защита от встраивания.</b> Сайт нельзя открыть внутри чужой страницы (защита от кликджекинга).</li>
+          <li><b>Без подмены типов файлов</b> и с ограниченной передачей адреса страницы сторонним сайтам (Referrer-Policy).</li>
+          <li><b>HTTPS.</b> На рабочем сервере сайт должен открываться только по https://. Если в адресной строке нет значка замка — не вводите никаких данных.</li>
+          <li><b>Минимум зависимостей.</b> Сервер использует одну внешнюю библиотеку (Express), клиентская часть написана без сторонних скриптов.</li>
+        </ul>
+      </section>
+
+      <section id="fraud">
+        <h2>Защита от мошенников</h2>
+        <p>Мошенники часто копируют дизайн бирж и брокеров. Запомните простые правила:</p>
+        <ul>
+          <li>Мы <b>никогда</b> не просим пароли, коды из SMS, seed-фразы и данные карт.</li>
+          <li>Мы <b>не пишем первыми</b> в мессенджерах и не звоним с предложениями заработать.</li>
+          <li>Мы <b>не просим переводить деньги</b> «менеджерам», на личные карты и криптокошельки.</li>
+          <li>Если вам обещают <b>гарантированную прибыль</b> или требуют «налог», «комиссию» или «страховку» за вывод средств — это мошенничество.</li>
+          <li>Если на «счёте» растёт прибыль, а вывести её не получается — прекратите переводы и обратитесь в полицию и в свой банк.</li>
+        </ul>
+      </section>
+
+      <section id="risk">
+        <h2>Риски торговли</h2>
+        <p>Торговля криптовалютами, CFD и маржинальная торговля с кредитным плечом сопряжены с высоким риском. Плечо увеличивает не только прибыль, но и убытки: вы можете потерять все вложенные средства. Демо-счёт не гарантирует таких же результатов на реальном рынке.</p>
+      </section>
+
+      <section id="report">
+        <h2>Сообщить о проблеме</h2>
+        <p>Нашли уязвимость или подозрительный сайт, выдающий себя за InvestHouse? Напишите на <a href="mailto:security@example.com"><b>security@example.com</b></a>.</p>
+      </section>
+    </div>
+  </div>
+</section>
+
+<div id="qa" data-theme="light"></div>
+
+<footer class="footer" id="contacts">
+  <div class="container">
+    <div class="risk" style="margin-top:0;border-top:0;padding-top:0">
+      <b>Предупреждение о рисках:</b> торговля CFD, криптовалютами и маржинальная торговля с использованием кредитного плеча сопряжены с высоким риском. Котировки на сайте являются демонстрационными.
+      <br>© InvestHouse
+    </div>
+  </div>
+</footer>
+
+<script src="/js/shared.js"></script>
+</body>
+</html>

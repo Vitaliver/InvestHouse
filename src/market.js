@@ -117,7 +117,7 @@ class Market {
         s.candles.push(cur);
         if (s.candles.length > HISTORY * 2) s.candles.splice(0, s.candles.length - HISTORY);
       }
-      const next = round(cur.close * (1 + gauss() * s.vol), s.digits);
+      const next = round(cur.close * (1 + gauss() * s.vol * 0.15), s.digits);
       cur.close = next;
       cur.high = Math.max(cur.high, next);
       cur.low = Math.min(cur.low, next);

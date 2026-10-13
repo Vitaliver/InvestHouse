@@ -1,0 +1,60 @@
+/* Общие компоненты: нижний мобильный бар и блок «Вопросы и ответы» */
+
+/* ---------- Мобильный нижний бар ---------- */
+.tabbar { display: none; }
+@media (max-width: 900px) {
+  body { padding-bottom: 96px; }
+  .tabbar {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom));
+    z-index: 100; padding: 6px; border-radius: 28px;
+    background: rgba(14, 14, 14, .92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, .08); box-shadow: 0 12px 30px rgba(0, 0, 0, .35);
+    font-family: 'Manrope', system-ui, sans-serif;
+  }
+  .tabbar a, .tabbar button {
+    display: grid; justify-items: center; gap: 3px; padding: 9px 2px 8px; border-radius: 22px;
+    color: #a3a3a3; font-size: 11px; font-weight: 700; background: none; border: 0; cursor: pointer;
+    text-decoration: none; font-family: inherit;
+  }
+  .tabbar svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tabbar .active { background: #ffd400; color: #0b0b0b; }
+}
+
+/* Лист «Ещё» */
+.sheet-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, .5); z-index: 110; opacity: 0; pointer-events: none; transition: .2s; }
+.sheet {
+  position: fixed; left: 12px; right: 12px; bottom: calc(100px + env(safe-area-inset-bottom)); z-index: 120;
+  background: #0e0e0e; color: #fff; border-radius: 24px; padding: 10px; border: 1px solid rgba(255, 255, 255, .08);
+  transform: translateY(20px); opacity: 0; pointer-events: none; transition: .2s; font-family: 'Manrope', system-ui, sans-serif;
+}
+.sheet a { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 14px; color: #fff; text-decoration: none; font-weight: 700; }
+.sheet a:hover { background: #1b1b1b; }
+.sheet a span { color: #ffd400; }
+.sheet-open .sheet, .sheet-open .sheet-backdrop { opacity: 1; pointer-events: auto; transform: none; }
+
+/* ---------- Блок «Вопросы и ответы» ---------- */
+.qa { padding: 80px 0; --qa-ink: #0b0b0b; --qa-muted: #6b6b6b; --qa-line: #e8e8e4; --qa-card: #f4f4f1; color: var(--qa-ink); font-family: 'Manrope', system-ui, sans-serif; }
+.qa.dark { --qa-ink: #ececec; --qa-muted: #8a8a8a; --qa-line: #262626; --qa-card: #161616; background: #0a0a0a; }
+.qa-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1.5fr; gap: 50px; }
+.qa-eyebrow { display: inline-block; font-size: 13px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; background: #ffd400; color: #0b0b0b; padding: 3px 10px; border-radius: 999px; margin-bottom: 14px; }
+.qa h2 { font-size: clamp(30px, 3.6vw, 46px); line-height: 1.08; letter-spacing: -1.2px; margin: 0; }
+.qa-lead { color: var(--qa-muted); margin: 16px 0 24px; }
+.qa-shield { display: flex; gap: 14px; align-items: start; background: var(--qa-card); border-radius: 18px; padding: 18px; }
+.qa-shield svg { flex: none; width: 36px; height: 36px; }
+.qa-shield b { display: block; margin-bottom: 4px; }
+.qa-shield p { margin: 0; color: var(--qa-muted); font-size: 14px; }
+.qa details { border-bottom: 1px solid var(--qa-line); padding: 20px 0; }
+.qa summary { list-style: none; cursor: pointer; font-weight: 700; font-size: 18px; display: flex; justify-content: space-between; gap: 20px; }
+.qa summary::-webkit-details-marker { display: none; }
+.qa summary::after { content: '+'; flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--qa-card); font-size: 20px; line-height: 1; transition: .2s; }
+.qa details[open] summary::after { transform: rotate(45deg); background: #ffd400; color: #0b0b0b; }
+.qa details p, .qa details li { color: var(--qa-muted); }
+.qa details p { margin: 12px 0 0; }
+.qa details ul { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 6px; }
+.qa a { color: inherit; text-decoration: underline; text-decoration-color: #ffd400; text-decoration-thickness: 2px; }
+@media (max-width: 900px) {
+  .qa { padding: 60px 0; }
+  .qa-inner { grid-template-columns: 1fr; gap: 30px; }
+  .qa summary { font-size: 16px; }
+}

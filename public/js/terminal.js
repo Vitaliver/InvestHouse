@@ -104,7 +104,7 @@
     $('watch').innerHTML = rows.map((q) => `
       <div class="watch-row ${q.symbol === symbol ? 'active' : ''}" data-symbol="${q.symbol}">
         <span><b>${pretty(q.symbol)}</b><small class="${q.change >= 0 ? 'up' : 'down'}">${q.change >= 0 ? '+' : ''}${q.change.toFixed(2)}%</small></span>
-        <span class="down" data-f="bid">${fmt(q.bid, q.digits)}</span>
+        <span data-f="bid">${fmt(q.bid, q.digits)}</span>
         <span class="up" data-f="ask">${fmt(q.ask, q.digits)}</span>
       </div>`).join('');
   }
@@ -164,7 +164,7 @@
   }
 
   // ---- График ----
-  const chart = new CandleChart($('chart'), { bg: '#0f1e2e', grid: 'rgba(255,255,255,0.04)' });
+  const chart = new CandleChart($('chart'), { bg: '#111111', grid: 'rgba(255,255,255,0.05)', text: '#8a8a8a', up: '#ffd400', down: '#f5f5f5' });
   chart.onHover = (c) => {
     const q = quotes.get(symbol);
     const d = q ? q.digits : 2;

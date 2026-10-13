@@ -27,6 +27,10 @@ test('API отдаёт рынки, свечи и 404', async () => {
     assert.strictEqual((await fetch(`${base}/api/candles/NOPE`)).status, 404);
     assert.strictEqual((await fetch(`${base}/`)).status, 200);
     assert.strictEqual((await fetch(`${base}/terminal`)).status, 200);
+    const sec = await fetch(`${base}/security`);
+    assert.strictEqual(sec.status, 200);
+    assert.match(sec.headers.get('content-security-policy'), /script-src 'self'/);
+    assert.strictEqual(sec.headers.get('x-frame-options'), 'DENY');
     assert.strictEqual((await fetch(`${base}/missing`)).status, 404);
   } finally {
     server.close();

@@ -5,9 +5,12 @@
   const HERO = 'BTCUSD';
 
   document.getElementById('year').textContent = new Date().getFullYear();
+  const header = document.getElementById('header');
+  document.getElementById('burger').addEventListener('click', () => header.classList.toggle('open'));
+  header.querySelectorAll('.nav a').forEach((a) => a.addEventListener('click', () => header.classList.remove('open')));
 
   const heroChart = new CandleChart(document.getElementById('hero-chart'), {
-    axes: false, crosshair: false, maxCandles: 60, bg: '#0d1b2a',
+    axes: false, crosshair: false, maxCandles: 60, bg: '#0b0b0b', up: '#ffd400', down: '#f5f5f5',
   });
 
   fetch(`/api/candles/${HERO}?limit=60`).then((r) => r.json()).then((c) => heroChart.setData(c, 2));

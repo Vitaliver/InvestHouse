@@ -9,29 +9,31 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/shared.css">
 </head>
-<body>
+<body data-page="home">
 
 <div class="ticker"><div class="ticker-track" id="ticker"></div></div>
 
 <header class="header" id="header">
   <div class="container">
     <a href="/" class="logo">
-      <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#b5f23d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M6 20v-6m6 6V9m6 11v-8"/></svg></span>
+      <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd400" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M6 20v-6m6 6V9m6 11v-8"/></svg></span>
       Invest<b>House</b>
     </a>
     <nav class="nav">
       <a href="#markets">Рынки</a>
       <a href="#accounts">Счета</a>
       <a href="#tools">Инструменты</a>
-      <a href="#faq">Вопросы</a>
+      <a href="#security">Безопасность</a>
+      <a href="#qa">Вопросы</a>
       <a href="#contacts">Контакты</a>
     </nav>
     <div class="header-actions">
       <a href="/terminal" class="btn btn-ghost btn-sm">Войти</a>
       <a href="/terminal" class="btn btn-accent btn-sm">Открыть счёт</a>
     </div>
-    <button class="burger" aria-label="Меню" onclick="document.getElementById('header').classList.toggle('open')">☰</button>
+    <button class="burger" aria-label="Меню" id="burger">☰</button>
   </div>
 </header>
 
@@ -267,37 +269,35 @@
   </div>
 </section>
 
-<section id="faq">
-  <div class="container faq-grid">
-    <div>
-      <span class="eyebrow">FAQ</span>
-      <h2>Вопросы<br>и ответы.</h2>
-      <p class="muted" style="margin-top:16px">Не нашли ответ? Напишите в поддержку — ответим в течение рабочего дня.</p>
+<section id="security" class="security-band">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Безопасность</span>
+        <h2>Безопасность —<br>в основе платформы</h2>
+      </div>
+      <p>Мы честно рассказываем, что храним и чего не храним. Сейчас InvestHouse работает в демо-режиме: без денег, без документов, без сбора персональных данных.</p>
     </div>
-    <div class="faq">
-      <details open>
-        <summary>Что такое демо-счёт?</summary>
-        <p>Это счёт с виртуальными средствами, на котором можно торговать по реальной логике платформы без риска потерять деньги. Отлично подходит для изучения терминала и проверки стратегий.</p>
-      </details>
-      <details>
-        <summary>Какие активы доступны для торговли?</summary>
-        <p>Криптовалюты (BTC, ETH, SOL и другие), основные валютные пары и драгоценные металлы — золото и серебро.</p>
-      </details>
-      <details>
-        <summary>Можно ли торговать со смартфона?</summary>
-        <p>Да, терминал адаптирован под мобильные устройства и работает прямо в браузере.</p>
-      </details>
-      <details>
-        <summary>Что такое кредитное плечо?</summary>
-        <p>Плечо позволяет открыть позицию больше собственных средств. Оно увеличивает как потенциальную прибыль, так и возможные убытки — используйте его осознанно.</p>
-      </details>
-      <details>
-        <summary>Безопасны ли мои данные?</summary>
-        <p>Соединение с платформой шифруется, а доступ к аккаунту защищается паролем и двухфакторной аутентификацией.</p>
-      </details>
+    <div class="sec-grid">
+      <div class="sec-card"><b>0</b><h3>персональных данных на сервере</h3><p>Не просим паспорт, телефон, адрес и данные карт.</p></div>
+      <div class="sec-card"><b>0</b><h3>сторонних трекеров</h3><p>Никакой рекламной аналитики и рекламных cookies.</p></div>
+      <div class="sec-card"><b>100%</b><h3>данных демо-счёта у вас</h3><p>Позиции и история хранятся только в вашем браузере.</p></div>
+      <div class="sec-card"><b>CSP</b><h3>защитные заголовки</h3><p>Запрет встраивания сайта и выполнения чужих скриптов.</p></div>
+    </div>
+    <div class="sec-tips">
+      <h3>Как защитить себя от мошенников</h3>
+      <ul>
+        <li>Никогда не переводите деньги «личным менеджерам», на чужие карты и криптокошельки.</li>
+        <li>Не сообщайте никому пароли, коды из SMS и seed-фразы — даже «сотрудникам поддержки».</li>
+        <li>Не верьте обещаниям гарантированной прибыли: на реальных рынках её не бывает.</li>
+        <li>Проверяйте адрес сайта и значок HTTPS перед вводом любых данных.</li>
+      </ul>
+      <a href="/security" class="btn btn-accent">Подробнее о безопасности →</a>
     </div>
   </div>
 </section>
+
+<div id="qa" data-theme="light"></div>
 
 <section style="padding-top:0">
   <div class="container">
@@ -315,7 +315,7 @@
   <div class="container">
     <div class="footer-grid">
       <div>
-        <a href="/" class="logo"><span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#b5f23d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M6 20v-6m6 6V9m6 11v-8"/></svg></span>InvestHouse</a>
+        <a href="/" class="logo"><span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd400" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M6 20v-6m6 6V9m6 11v-8"/></svg></span>InvestHouse</a>
         <p>Платформа для торговли цифровыми активами, валютами и металлами.</p>
       </div>
       <div>
@@ -324,7 +324,7 @@
       </div>
       <div>
         <h4>Помощь</h4>
-        <ul><li><a href="#faq">Вопросы и ответы</a></li><li><a href="#tools">Калькулятор</a></li></ul>
+        <ul><li><a href="/security">Безопасность и данные</a></li><li><a href="#qa">Вопросы и ответы</a></li><li><a href="#tools">Калькулятор</a></li></ul>
       </div>
       <div>
         <h4>Контакты</h4>
@@ -341,5 +341,6 @@
 <script src="/js/common.js"></script>
 <script src="/js/chart.js"></script>
 <script src="/js/landing.js"></script>
+<script src="/js/shared.js"></script>
 </body>
 </html>

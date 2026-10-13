@@ -10,7 +10,33 @@ const TICK_MS = Number(process.env.TICK_MS) || 1000;
 function createApp(market = new Market()) {
   const app = express();
   app.disable('x-powered-by');
-  app.use(express.json());
+  app.use(express.json({ limit: '10kb' }));
+
+  // Заголовки безопасности для всех ответов
+  app.use((req, res, next) => {
+    res.set({
+      'Content-Security-Policy': [
+        "default-src 'self'",
+        "script-src 'self'",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com",
+        "img-src 'self' data:",
+        "connect-src 'self'",
+        "frame-ancestors 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+      ].join('; '),
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+    });
+    if (req.secure || req.get('x-forwarded-proto') === 'https') {
+      res.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    }
+    next();
+  });
 
   app.get('/api/health', (req, res) => {
     res.json({ ok: true, uptime: process.uptime() });

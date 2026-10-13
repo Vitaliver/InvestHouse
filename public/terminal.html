@@ -8,12 +8,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/terminal.css">
+  <link rel="stylesheet" href="/css/shared.css">
 </head>
-<body>
+<body data-page="terminal">
 <div class="app">
   <header class="topbar">
     <a href="/" class="logo">
-      <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#b5f23d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M6 20v-6m6 6V9m6 11v-8"/></svg></span>
+      <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd400" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M6 20v-6m6 6V9m6 11v-8"/></svg></span>
       <span class="hide-sm">InvestHouse</span>
     </a>
     <div class="stats">
@@ -74,7 +75,7 @@
     </div>
   </aside>
 
-  <section class="bottom">
+  <section class="bottom" id="positions">
     <div class="btabs" id="btabs">
       <button data-tab="open" class="active">Открытые позиции <span id="open-count">0</span></button>
       <button data-tab="history">История</button>
@@ -87,10 +88,12 @@
     </div>
   </section>
 </div>
+<div id="qa" data-theme="dark"></div>
 <div class="toast" id="toast"></div>
 
 <script src="/js/common.js"></script>
 <script src="/js/chart.js"></script>
 <script src="/js/terminal.js"></script>
+<script src="/js/shared.js"></script>
 </body>
 </html>
