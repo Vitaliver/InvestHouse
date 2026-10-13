@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>InvestHouse — торговая платформа</title>
+  <meta name="description" content="InvestHouse — современная платформа для торговли криптовалютами, валютами и металлами. Котировки в реальном времени и демо-счёт.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="ticker"><div class="ticker-track" id="ticker"></div></div>
+
+<header class="header" id="header">
+  <div class="container">
+    <a href="/" class="logo">
+      <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#b5f23d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M6 20v-6m6 6V9m6 11v-8"/></svg></span>
+      Invest<b>House</b>
+    </a>
+    <nav class="nav">
+      <a href="#markets">Рынки</a>
+      <a href="#accounts">Счета</a>
+      <a href="#tools">Инструменты</a>
+      <a href="#faq">Вопросы</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+    <div class="header-actions">
+      <a href="/terminal" class="btn btn-ghost btn-sm">Войти</a>
+      <a href="/terminal" class="btn btn-accent btn-sm">Открыть счёт</a>
+    </div>
+    <button class="burger" aria-label="Меню" onclick="document.getElementById('header').classList.toggle('open')">☰</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div>
+      <span class="eyebrow">Крипто · Forex · Металлы</span>
+      <h1>Твой капитал.<br><span>Твоя стратегия.</span></h1>
+      <p class="lead">InvestHouse — платформа для торговли цифровыми активами и валютными парами. Котировки в реальном времени, удобный терминал и бесплатный демо-счёт для старта.</p>
+      <div class="hero-cta">
+        <a href="/terminal" class="btn btn-accent">Начать торговать →</a>
+        <a href="#markets" class="btn btn-ghost">Смотреть рынки</a>
+      </div>
+      <div class="hero-stats">
+        <div><strong>24/7</strong><span>торговля криптовалютой</span></div>
+        <div><strong id="stat-count">12+</strong><span>инструментов</span></div>
+        <div><strong>1:100</strong><span>кредитное плечо</span></div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-head">
+        <div><b id="hero-symbol">BTC/USD</b> <span class="muted">· 1m</span></div>
+        <div id="hero-price" style="font-weight:700;color:#fff">—</div>
+      </div>
+      <canvas id="hero-chart"></canvas>
+      <div class="hero-card-foot">
+        <div class="sell"><span>SELL</span><span id="hero-bid">—</span></div>
+        <div class="buy"><span>BUY</span><span id="hero-ask">—</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="markets">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Рынки</span>
+        <h2>Торгуйте на мировых<br>рынках с <span class="hl">InvestHouse</span></h2>
+      </div>
+      <div class="tabs" id="market-tabs">
+        <button class="tab active" data-group="all">Все</button>
+        <button class="tab" data-group="crypto">Криптовалюты</button>
+        <button class="tab" data-group="forex">Валюты</button>
+        <button class="tab" data-group="metals">Металлы</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="markets">
+        <thead>
+          <tr><th>Инструмент</th><th class="num">Цена</th><th class="num hide-sm">Bid / Ask</th><th class="num">24ч</th><th class="num hide-sm"></th></tr>
+        </thead>
+        <tbody id="markets-body">
+          <tr><td colspan="5" class="muted">Загрузка котировок…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="bg-soft">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Преимущества</span>
+        <h2>Надёжная инфраструктура<br>для торговли</h2>
+      </div>
+      <p>Всё необходимое для активной торговли — в одном окне: от аналитики до управления рисками.</p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <h3>Мгновенное исполнение</h3>
+        <p>Ордера исполняются по текущей рыночной цене без задержек.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+        <h3>Защита данных</h3>
+        <p>Шифрование соединения и двухфакторная аутентификация.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
+        <h3>Профессиональный график</h3>
+        <p>Свечной график, таймфреймы и котировки в реальном времени.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+        <h3>Поддержка 24/7</h3>
+        <p>Команда поддержки на связи круглосуточно в чате и по почте.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container band">
+    <div class="band-num">24/7</div>
+    <div>
+      <span class="eyebrow">Почему InvestHouse</span>
+      <h2>Простая торговля<br>без лишних шагов</h2>
+      <p class="muted">Открывайте позиции в несколько кликов и следите за результатом в реальном времени.</p>
+      <ul>
+        <li>Демо-счёт с виртуальными средствами для тренировки стратегий</li>
+        <li>Торговля на рост и на падение (long / short)</li>
+        <li>Прозрачный расчёт маржи и прибыли по каждой позиции</li>
+        <li>Работает в браузере на компьютере, планшете и смартфоне</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="accounts" class="bg-soft">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Типы счетов</span>
+        <h2>Выберите счёт<br>под свои цели</h2>
+      </div>
+      <p>Начните с демо-счёта, а затем переходите на уровень, который подходит вашему стилю торговли.</p>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <h3>Start</h3>
+        <span class="muted">Для знакомства с рынком</span>
+        <div class="plan-price">Демо</div>
+        <span class="muted">10 000 USD виртуальных средств</span>
+        <ul>
+          <li>Все инструменты платформы</li>
+          <li>Котировки в реальном времени</li>
+          <li>Плечо до 1:20</li>
+          <li class="off">Персональный менеджер</li>
+          <li class="off">Аналитические обзоры</li>
+        </ul>
+        <a href="/terminal" class="btn btn-ghost">Открыть демо</a>
+      </div>
+      <div class="plan featured">
+        <span class="plan-tag">Популярный</span>
+        <h3>Standard</h3>
+        <span class="muted">Для регулярной торговли</span>
+        <div class="plan-price">Standard</div>
+        <span class="muted">Сбалансированные условия</span>
+        <ul>
+          <li>Все инструменты платформы</li>
+          <li>Плечо до 1:50</li>
+          <li>Аналитические обзоры</li>
+          <li>Приоритетная поддержка</li>
+          <li class="off">Персональный менеджер</li>
+        </ul>
+        <a href="/terminal" class="btn btn-accent">Начать</a>
+      </div>
+      <div class="plan">
+        <h3>Pro</h3>
+        <span class="muted">Для опытных трейдеров</span>
+        <div class="plan-price">Pro</div>
+        <span class="muted">Максимум возможностей</span>
+        <ul>
+          <li>Все инструменты платформы</li>
+          <li>Плечо до 1:100</li>
+          <li>Аналитические обзоры</li>
+          <li>Приоритетная поддержка</li>
+          <li>Персональный менеджер</li>
+        </ul>
+        <a href="/terminal" class="btn btn-dark">Начать</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tools">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Инструменты</span>
+        <h2>Калькулятор позиции</h2>
+      </div>
+      <p>Рассчитайте необходимую маржу и стоимость движения цены до открытия сделки.</p>
+    </div>
+    <div class="calc">
+      <div class="calc-form">
+        <div class="field">
+          <label>Инструмент</label>
+          <select id="calc-symbol"></select>
+        </div>
+        <div class="field">
+          <label>Направление</label>
+          <div class="seg" id="calc-side">
+            <button class="active" data-side="buy">Покупка</button>
+            <button data-side="sell">Продажа</button>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Объём, USD</label>
+            <input type="number" id="calc-amount" value="1000" min="1">
+          </div>
+          <div class="field">
+            <label>Кредитное плечо</label>
+            <select id="calc-leverage">
+              <option>1</option><option>5</option><option>10</option><option selected>20</option><option>50</option><option>100</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Ожидаемое движение цены, %</label>
+          <input type="number" id="calc-move" value="1" step="0.1">
+        </div>
+      </div>
+      <div class="calc-result">
+        <div class="row"><span>Цена входа</span><b id="calc-price">—</b></div>
+        <div class="row"><span>Размер позиции</span><b id="calc-size">—</b></div>
+        <div class="row"><span>Необходимая маржа</span><b id="calc-margin">—</b></div>
+        <div class="row"><span>Результат при движении</span><b id="calc-pl">—</b></div>
+        <a href="/terminal" class="btn btn-accent" style="justify-content:center">Открыть позицию в терминале</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bg-soft">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Как начать</span>
+        <h2>Четыре шага до первой сделки</h2>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Регистрация</h3><p>Создайте аккаунт за пару минут.</p></div>
+      <div class="step"><h3>Демо-счёт</h3><p>Потренируйтесь на виртуальных средствах без риска.</p></div>
+      <div class="step"><h3>Выбор актива</h3><p>Криптовалюты, валютные пары или металлы.</p></div>
+      <div class="step"><h3>Сделка</h3><p>Откройте позицию и управляйте ей в терминале.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="container faq-grid">
+    <div>
+      <span class="eyebrow">FAQ</span>
+      <h2>Вопросы<br>и ответы.</h2>
+      <p class="muted" style="margin-top:16px">Не нашли ответ? Напишите в поддержку — ответим в течение рабочего дня.</p>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Что такое демо-счёт?</summary>
+        <p>Это счёт с виртуальными средствами, на котором можно торговать по реальной логике платформы без риска потерять деньги. Отлично подходит для изучения терминала и проверки стратегий.</p>
+      </details>
+      <details>
+        <summary>Какие активы доступны для торговли?</summary>
+        <p>Криптовалюты (BTC, ETH, SOL и другие), основные валютные пары и драгоценные металлы — золото и серебро.</p>
+      </details>
+      <details>
+        <summary>Можно ли торговать со смартфона?</summary>
+        <p>Да, терминал адаптирован под мобильные устройства и работает прямо в браузере.</p>
+      </details>
+      <details>
+        <summary>Что такое кредитное плечо?</summary>
+        <p>Плечо позволяет открыть позицию больше собственных средств. Оно увеличивает как потенциальную прибыль, так и возможные убытки — используйте его осознанно.</p>
+      </details>
+      <details>
+        <summary>Безопасны ли мои данные?</summary>
+        <p>Соединение с платформой шифруется, а доступ к аккаунту защищается паролем и двухфакторной аутентификацией.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="container">
+    <div class="cta">
+      <div>
+        <h2>Готовы начать торговать?</h2>
+        <p>Откройте демо-счёт и попробуйте терминал прямо сейчас.</p>
+      </div>
+      <a href="/terminal" class="btn btn-accent">Открыть терминал →</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer" id="contacts">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a href="/" class="logo"><span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#b5f23d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M6 20v-6m6 6V9m6 11v-8"/></svg></span>InvestHouse</a>
+        <p>Платформа для торговли цифровыми активами, валютами и металлами.</p>
+      </div>
+      <div>
+        <h4>Платформа</h4>
+        <ul><li><a href="/terminal">Терминал</a></li><li><a href="#markets">Рынки</a></li><li><a href="#accounts">Счета</a></li></ul>
+      </div>
+      <div>
+        <h4>Помощь</h4>
+        <ul><li><a href="#faq">Вопросы и ответы</a></li><li><a href="#tools">Калькулятор</a></li></ul>
+      </div>
+      <div>
+        <h4>Контакты</h4>
+        <ul><li><a href="mailto:support@example.com">support@example.com</a></li></ul>
+      </div>
+    </div>
+    <div class="risk">
+      <b>Предупреждение о рисках:</b> торговля CFD, криптовалютами и маржинальная торговля с использованием кредитного плеча сопряжены с высоким риском и подходят не всем инвесторам. Вы можете потерять часть или все вложенные средства. Котировки на сайте в текущей версии являются демонстрационными.
+      <br>© <span id="year"></span> InvestHouse
+    </div>
+  </div>
+</footer>
+
+<script src="/js/common.js"></script>
+<script src="/js/chart.js"></script>
+<script src="/js/landing.js"></script>
+</body>
+</html>

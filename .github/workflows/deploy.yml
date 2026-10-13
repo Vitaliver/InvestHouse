@@ -1,0 +1,55 @@
+name: CI / Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  # Автодеплой на VPS по SSH при каждом пуше в main.
+  # Нужные секреты репозитория: SSH_HOST, SSH_USER, SSH_KEY (приватный ключ), опционально SSH_PORT и APP_DIR.
+  deploy:
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check secrets
+        id: check
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: echo "enabled=${{ env.SSH_HOST != '' }}" >> "$GITHUB_OUTPUT"
+      - name: Deploy over SSH
+        if: steps.check.outputs.enabled == 'true'
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            set -e
+            APP_DIR="${{ secrets.APP_DIR || '~/investhouse' }}"
+            if [ ! -d "$APP_DIR/.git" ]; then
+              git clone https://github.com/${{ github.repository }}.git "$APP_DIR"
+            fi
+            cd "$APP_DIR"
+            git fetch origin main
+            git reset --hard origin/main
+            npm ci --omit=dev
+            npx --yes pm2 startOrReload ecosystem.config.js --update-env
+            npx --yes pm2 save
+      - name: Skip notice
+        if: steps.check.outputs.enabled != 'true'
+        run: echo "Секреты SSH_* не заданы — деплой пропущен."
