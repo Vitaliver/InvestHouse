@@ -96,14 +96,21 @@
       if (opts.axes) {
         ctx.textAlign = 'center';
         const every = Math.ceil(data.length / 6);
+        // Если интервал между свечами >= 1ч — на оси даты, иначе время.
+        const interval = data.length > 1 ? data[1].time - data[0].time : 60_000;
+        const asDate = interval >= 3_600_000;
+        const fmtLabel = (ts) => {
+          const d = new Date(ts);
+          if (asDate) return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}`;
+          return d.toTimeString().slice(0, 5);
+        };
         data.forEach((c, i) => {
           if (i % every) return;
           const x = offset + i * step + step / 2;
           ctx.strokeStyle = opts.grid;
           ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT + ch); ctx.stroke();
-          const d = new Date(c.time);
           ctx.fillStyle = opts.text;
-          ctx.fillText(d.toTimeString().slice(0, 5), x, h - padB / 2);
+          ctx.fillText(fmtLabel(c.time), x, h - padB / 2);
         });
         ctx.textAlign = 'left';
       }

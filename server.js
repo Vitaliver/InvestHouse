@@ -21,7 +21,8 @@ function createApp(market = new Market()) {
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "font-src 'self' https://fonts.gstatic.com",
         "img-src 'self' data:",
-        "connect-src 'self'",
+        // Терминал тянет свечи, стакан и ленту сделок напрямую у Binance
+        "connect-src 'self' https://api.binance.com https://api.binance.us https://data-api.binance.vision wss://stream.binance.com wss://stream.binance.com:9443 wss://data-stream.binance.vision",
         "frame-ancestors 'none'",
         "base-uri 'self'",
         "form-action 'self'",
@@ -67,6 +68,11 @@ function createApp(market = new Market()) {
       res.write(`data: ${JSON.stringify(updates)}\n\n`);
     });
     req.on('close', unsubscribe);
+  });
+
+  // /exchange — алиас для нового биржевого терминала
+  app.get('/exchange', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'terminal.html'));
   });
 
   app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
