@@ -47,8 +47,18 @@
       <div class="xwallet" title="Эквити в USDT">
         <span>Эквити</span><b id="x-equity">—</b>
       </div>
-      <span class="xpill demo">DEMO</span>
-      <button class="xpill ghost" id="x-reset" title="Сбросить демо-счёт">Сбросить</button>
+      <div class="xuser" id="x-user" hidden>
+        <button type="button" class="xuser-trigger" id="x-user-trigger" aria-haspopup="menu" aria-expanded="false" title="Аккаунт">
+          <span class="xuser-avatar" id="x-user-avatar">—</span>
+          <span class="xuser-email hide-md" id="x-user-email">—</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="xuser-menu" id="x-user-menu" role="menu" hidden>
+          <div class="xuser-menu-head"><b id="x-user-email-full">—</b></div>
+          <button type="button" role="menuitem" id="x-reset">Сбросить портфель</button>
+          <button type="button" role="menuitem" id="x-logout">Выйти</button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -179,6 +189,7 @@
 <div id="qa" data-theme="dark"></div>
 <div class="xtoast" id="x-toast"></div>
 
+<script src="/vendor/supabase.js"></script>
 <script src="/js/common.js"></script>
 <script src="/js/chart.js"></script>
 <script src="/js/terminal.js"></script>

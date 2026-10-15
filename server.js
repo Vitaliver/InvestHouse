@@ -6,6 +6,8 @@ const { Market } = require('./src/market');
 
 const PORT = Number(process.env.PORT) || 3000;
 const TICK_MS = Number(process.env.TICK_MS) || 1000;
+const SUPABASE_URL = process.env.SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
 
 function createApp(market = new Market()) {
   const app = express();
@@ -21,8 +23,15 @@ function createApp(market = new Market()) {
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "font-src 'self' https://fonts.gstatic.com",
         "img-src 'self' data:",
-        // Терминал тянет свечи, стакан и ленту сделок напрямую у Binance
-        "connect-src 'self' https://api.binance.com https://api.binance.us https://data-api.binance.vision wss://stream.binance.com wss://stream.binance.com:9443 wss://data-stream.binance.vision",
+        [
+          "connect-src 'self'",
+          // Терминал тянет свечи, стакан и ленту сделок напрямую у Binance
+          'https://api.binance.com https://api.binance.us https://data-api.binance.vision',
+          'wss://stream.binance.com wss://stream.binance.com:9443 wss://data-stream.binance.vision',
+          // Supabase: авторизация, профиль, realtime
+          'https://*.supabase.co https://*.supabase.in',
+          'wss://*.supabase.co wss://*.supabase.in',
+        ].join(' '),
         "frame-ancestors 'none'",
         "base-uri 'self'",
         "form-action 'self'",
@@ -41,6 +50,17 @@ function createApp(market = new Market()) {
 
   app.get('/api/health', (req, res) => {
     res.json({ ok: true, uptime: process.uptime() });
+  });
+
+  // Клиент получает отсюда публичные параметры подключения к Supabase.
+  // Отдаются только URL проекта и anon key — это публичные значения, безопасные для фронтенда.
+  app.get('/api/config', (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    res.json({
+      supabase: SUPABASE_URL && SUPABASE_ANON_KEY
+        ? { url: SUPABASE_URL, anonKey: SUPABASE_ANON_KEY }
+        : null,
+    });
   });
 
   app.get('/api/markets', (req, res) => {
@@ -70,7 +90,6 @@ function createApp(market = new Market()) {
     req.on('close', unsubscribe);
   });
 
-  // /exchange — алиас для нового биржевого терминала
   app.get('/exchange', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'terminal.html'));
   });
@@ -89,6 +108,10 @@ if (require.main === module) {
   setInterval(() => market.tick(), TICK_MS);
   createApp(market).listen(PORT, () => {
     console.log(`InvestHouse запущен: http://localhost:${PORT}`);
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      console.warn('[auth] SUPABASE_URL и/или SUPABASE_ANON_KEY не заданы — вход и регистрация отключены.');
+      console.warn('[auth] Задайте переменные окружения в .env и перезапустите сервер.');
+    }
   });
 }
 

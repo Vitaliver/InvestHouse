@@ -41,14 +41,16 @@
     'https://api.binance.us',
   ];
   const FEE = 0.001;              // 0.1% комиссия с каждой сделки
-  const START_USDT = 10_000;      // стартовый баланс демо-счёта
-  const STORE_KEY = 'investhouse.exchange.v2';
+  const START_USDT = 10_000;      // стартовый баланс нового аккаунта
+  const STORE_PREFIX = 'investhouse.wallet.v1.';
+  const LEGACY_STORE = 'investhouse.exchange.v2';   // старый общий ключ (до авторизации)
   const BOOK_ROWS = 12;           // строк на сторону стакана
   const TRADES_MAX = 40;          // длина ленты сделок
   const MAX_CANDLES = 500;
 
   // ========== Состояние ==========
   const state = {
+    user: null,
     symbol: 'BTCUSDT',
     tf: '15m',
     orderType: 'market',
@@ -93,17 +95,30 @@
     toast.timer = setTimeout(() => { t.className = 'xtoast ' + (kind || ''); }, 2400);
   }
 
-  // ========== Хранилище счёта ==========
+  // ========== Хранилище счёта (ключ зависит от user.id) ==========
+  function storeKey() {
+    return STORE_PREFIX + (state.user ? state.user.id : 'anon');
+  }
   function loadAccount() {
+    // Миграция из старого ключа без привязки к пользователю: один раз переносим счёт.
     try {
-      const s = JSON.parse(localStorage.getItem(STORE_KEY));
+      if (state.user && !localStorage.getItem(storeKey())) {
+        const legacy = localStorage.getItem(LEGACY_STORE);
+        if (legacy) {
+          localStorage.setItem(storeKey(), legacy);
+          localStorage.removeItem(LEGACY_STORE);
+        }
+      }
+    } catch (e) { /* ignore */ }
+    try {
+      const s = JSON.parse(localStorage.getItem(storeKey()));
       if (s && s.balances && typeof s.balances.USDT === 'number') return s;
     } catch (e) { /* ignore */ }
     return { balances: { USDT: START_USDT }, open: [], history: [], seq: 1 };
   }
-  let acc = loadAccount();
+  let acc = { balances: { USDT: START_USDT }, open: [], history: [], seq: 1 };
   function saveAccount() {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(acc)); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(storeKey(), JSON.stringify(acc)); } catch (e) { /* ignore */ }
   }
 
   function bal(asset) { return acc.balances[asset] || 0; }
@@ -828,18 +843,61 @@
     if (btn) cancelOrder(+btn.dataset.cancel);
   });
 
-  // Сброс
-  $('x-reset').addEventListener('click', () => {
-    if (!confirm('Сбросить демо-счёт? Все балансы, открытые ордера и история будут удалены.')) return;
+  // Сброс портфеля (кнопка в меню пользователя)
+  $('x-reset').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!confirm('Сбросить портфель? Все балансы, открытые ордера и история будут удалены. Это нельзя отменить.')) return;
     acc = { balances: { USDT: START_USDT }, open: [], history: [], seq: 1 };
     saveAccount();
     renderWallet();
     renderBottom();
-    toast('Демо-счёт сброшен', 'ok');
+    closeUserMenu();
+    toast('Портфель сброшен', 'ok');
   });
+
+  // Выход из аккаунта
+  $('x-logout').addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeUserMenu();
+    IH.signOut();
+  });
+
+  // Меню пользователя: клик по chip открывает/закрывает
+  function closeUserMenu() {
+    const menu = $('x-user-menu');
+    const trig = $('x-user-trigger');
+    if (menu) menu.hidden = true;
+    if (trig) trig.setAttribute('aria-expanded', 'false');
+  }
+  $('x-user-trigger').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const menu = $('x-user-menu');
+    const open = menu.hidden;
+    menu.hidden = !open;
+    $('x-user-trigger').setAttribute('aria-expanded', String(open));
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#x-user')) closeUserMenu();
+  });
+
+  function applyUser(user) {
+    const email = user.email || user.phone || 'аккаунт';
+    const letter = (email[0] || '?').toUpperCase();
+    $('x-user').hidden = false;
+    $('x-user-avatar').textContent = letter;
+    $('x-user-email').textContent = email;
+    $('x-user-email-full').textContent = email;
+  }
 
   // ========== Инициализация ==========
   (async function init() {
+    // Требуем авторизацию; без неё — редирект на /auth, функция возвращает null
+    const user = await IH.requireAuth();
+    if (!user) return;
+    state.user = user;
+    applyUser(user);
+    acc = loadAccount();
+
     // Параметр ?symbol=
     const q = new URLSearchParams(location.search).get('symbol');
     if (q) {

@@ -27,11 +27,29 @@ test('API отдаёт рынки, свечи и 404', async () => {
     assert.strictEqual((await fetch(`${base}/api/candles/NOPE`)).status, 404);
     assert.strictEqual((await fetch(`${base}/`)).status, 200);
     assert.strictEqual((await fetch(`${base}/terminal`)).status, 200);
+    assert.strictEqual((await fetch(`${base}/auth`)).status, 200);
+    assert.strictEqual((await fetch(`${base}/vendor/supabase.js`)).status, 200);
     const sec = await fetch(`${base}/security`);
     assert.strictEqual(sec.status, 200);
     assert.match(sec.headers.get('content-security-policy'), /script-src 'self'/);
+    assert.match(sec.headers.get('content-security-policy'), /\*\.supabase\.co/);
     assert.strictEqual(sec.headers.get('x-frame-options'), 'DENY');
     assert.strictEqual((await fetch(`${base}/missing`)).status, 404);
+  } finally {
+    server.close();
+  }
+});
+
+test('/api/config возвращает форму { supabase: null | { url, anonKey } }', async () => {
+  const server = await listen(createApp(new Market()));
+  const base = `http://127.0.0.1:${server.address().port}`;
+  try {
+    const res = await fetch(`${base}/api/config`);
+    assert.strictEqual(res.status, 200);
+    assert.match(res.headers.get('cache-control') || '', /no-store/);
+    const cfg = await res.json();
+    assert.ok('supabase' in cfg, 'ответ должен содержать ключ supabase');
+    assert.ok(cfg.supabase === null || (cfg.supabase.url && cfg.supabase.anonKey));
   } finally {
     server.close();
   }

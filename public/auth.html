@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Вход — InvestHouse</title>
+  <meta name="description" content="Вход и регистрация в InvestHouse — торговая платформа с котировками Binance в реальном времени.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body data-page="auth">
+
+<div class="auth-shell">
+  <a href="/" class="auth-logo">
+    <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd400" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M6 20v-6m6 6V9m6 11v-8"/></svg></span>
+    <span>InvestHouse</span>
+  </a>
+
+  <main class="auth-card" aria-live="polite">
+    <div class="auth-tabs" id="auth-tabs" role="tablist">
+      <button type="button" role="tab" aria-selected="true" data-tab="signin" class="active">Войти</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="signup">Регистрация</button>
+    </div>
+
+    <div class="auth-pane" data-view="form">
+      <h1 class="auth-title" id="auth-title">С возвращением</h1>
+      <p class="auth-sub" id="auth-sub">Войдите, чтобы открыть терминал и получить доступ к рынкам.</p>
+
+      <form id="auth-form" novalidate>
+        <label class="auth-field">
+          <span>Email</span>
+          <input type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+        </label>
+        <label class="auth-field" id="auth-name-field" hidden>
+          <span>Имя</span>
+          <input type="text" name="name" autocomplete="name" placeholder="Как к вам обращаться">
+        </label>
+        <label class="auth-field">
+          <span class="auth-field-row">
+            <span id="auth-pw-label">Пароль</span>
+            <a href="#" class="auth-link" id="auth-forgot" tabindex="0">Забыли пароль?</a>
+          </span>
+          <span class="auth-pw-wrap">
+            <input type="password" name="password" required autocomplete="current-password" minlength="6" placeholder="Минимум 6 символов">
+            <button type="button" class="auth-pw-toggle" aria-label="Показать пароль" id="auth-pw-toggle">
+              <svg class="eye-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="eye-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M17.94 17.94A10.1 10.1 0 0112 20C5 20 1 12 1 12a19 19 0 015.06-5.94M9.9 4.24A9.1 9.1 0 0112 4c7 0 11 8 11 8a19 19 0 01-2.16 3.19M14.12 14.12A3 3 0 019.88 9.88"/><path d="M1 1l22 22"/></svg>
+            </button>
+          </span>
+        </label>
+
+        <label class="auth-check" id="auth-tos" hidden>
+          <input type="checkbox" required>
+          <span>Соглашаюсь с <a href="/security" class="auth-link">обработкой данных</a> и правилами платформы.</span>
+        </label>
+
+        <div class="auth-msg" id="auth-msg" hidden></div>
+
+        <button type="submit" class="auth-submit" id="auth-submit">
+          <span class="auth-submit-text">Войти</span>
+          <span class="auth-spinner" hidden></span>
+        </button>
+      </form>
+
+      <p class="auth-switch">
+        <span id="auth-switch-q">Ещё нет аккаунта?</span>
+        <a href="#" class="auth-link" id="auth-switch">Создать</a>
+      </p>
+    </div>
+
+    <div class="auth-pane" data-view="reset" hidden>
+      <h1 class="auth-title">Сброс пароля</h1>
+      <p class="auth-sub">Укажите email — отправим ссылку для установки нового пароля.</p>
+      <form id="reset-form" novalidate>
+        <label class="auth-field">
+          <span>Email</span>
+          <input type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+        </label>
+        <div class="auth-msg" id="reset-msg" hidden></div>
+        <button type="submit" class="auth-submit">
+          <span class="auth-submit-text">Отправить ссылку</span>
+          <span class="auth-spinner" hidden></span>
+        </button>
+      </form>
+      <p class="auth-switch"><a href="#" class="auth-link" id="reset-back">← Назад ко входу</a></p>
+    </div>
+
+    <div class="auth-pane" data-view="sent" hidden>
+      <div class="auth-check-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0b0b0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h1 class="auth-title">Проверьте почту</h1>
+      <p class="auth-sub" id="sent-msg">Мы отправили письмо на <b id="sent-email">—</b>. Перейдите по ссылке, чтобы подтвердить email и завершить вход.</p>
+      <p class="auth-switch"><a href="#" class="auth-link" id="sent-back">← Назад</a></p>
+    </div>
+
+    <div class="auth-pane" data-view="offline" hidden>
+      <div class="auth-warn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ff5a4f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+      </div>
+      <h1 class="auth-title">Авторизация не настроена</h1>
+      <p class="auth-sub">
+        Чтобы включить вход и регистрацию, задайте переменные окружения
+        <code>SUPABASE_URL</code> и <code>SUPABASE_ANON_KEY</code> на сервере
+        и перезапустите приложение. Шаги описаны в
+        <a href="https://github.com/vitaliver/investhouse#supabase" class="auth-link">README</a>.
+      </p>
+      <p class="auth-switch"><a href="/" class="auth-link">← На главную</a></p>
+    </div>
+  </main>
+
+  <p class="auth-tag">Защищено шифрованием TLS · ваши данные не передаются третьим лицам.</p>
+</div>
+
+<script src="/vendor/supabase.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/auth.js"></script>
+</body>
+</html>
