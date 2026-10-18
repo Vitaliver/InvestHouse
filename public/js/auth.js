@@ -7,8 +7,8 @@
   const show = (view) => panes.forEach((p) => { p.hidden = p.dataset.view !== view; });
 
   const urlParams = new URLSearchParams(location.search);
-  const nextParam = urlParams.get('next') || '/terminal';
-  const safeNext = /^\/[^/]/.test(nextParam) ? nextParam : '/terminal';
+  const nextParam = urlParams.get('next') || '/signals';
+  const safeNext = /^\/[^/]/.test(nextParam) ? nextParam : '/signals';
   const initialMode = urlParams.get('mode') === 'signup' ? 'signup' : 'signin';
 
   // Переводы ошибок Supabase на русский

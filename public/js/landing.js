@@ -25,7 +25,7 @@
         <td class="num"><b class="price">${fmt(q.price, q.digits)}</b></td>
         <td class="num hide-sm muted ba">${fmt(q.bid, q.digits)} / ${fmt(q.ask, q.digits)}</td>
         <td class="num"><span class="badge chg ${q.change >= 0 ? 'up' : 'down'}">${q.change >= 0 ? '+' : ''}${q.change.toFixed(2)}%</span></td>
-        <td class="num hide-sm"><a class="btn btn-dark btn-sm" href="/terminal?symbol=${q.symbol}">Торговать</a></td>
+        <td class="num hide-sm"><a class="btn btn-dark btn-sm" href="/signals">Сигналы</a></td>
       </tr>`).join('');
   }
 

@@ -1,119 +1,120 @@
 # InvestHouse
 
-Торговая платформа в стиле криптобиржи: лендинг, вход/регистрация через **Supabase** и веб-терминал с **настоящими** рыночными данными из публичного API Binance.
+Платформа крипто-сигналов. Движок на базе EMA + RSI + ATR анализирует Binance в реальном времени, выпускает сигналы с жёстким `R:R ≥ 1.5` и доставляет их в веб-ленту и в Telegram.
 
-**Реальное:** свечной график, стакан, лента сделок и 24-часовые тикеры по 16 парам — всё тянется напрямую из публичного API Binance через REST и WebSocket. Ключи не нужны.
+**Что получает пользователь:** регистрация через Supabase, выбор пар, живая лента сигналов (вход/стоп/цель/R:R), подключение Telegram в один клик с деталями каждого сетапа в лс, статистика (винрейт, средний R, сумма R) по 7 / 30 / 90 дням.
 
-**Внутреннее:** торговый движок — собственный matching-engine поверх реальных цен. Балансы и ордера привязаны к вашему аккаунту и хранятся локально в браузере под ключом пользователя. На биржу ордера не уходят.
+**Математика +EV:** при `R:R = 1.5` и винрейте 55% ожидание `0.55·1.5 − 0.45·1 = +0.375R` за сделку. Это инвариант кода: сигналы с меньшим R:R движок просто не выпускает (`src/signals/engine.js`). Реальный винрейт показан в `/signals` — честные цифры, без приукрашиваний.
 
-**Стек:** Node.js 20+ · Express · чистый HTML/CSS/JS (без сборки) · Supabase Auth (`@supabase/supabase-js`, UMD-бандл подключён как `/vendor/supabase.js`) · `fetch` + `WebSocket` в браузере · свечной график на canvas.
+**Стек:** Node.js 20+ · Express · `@supabase/supabase-js` (auth + журнал + realtime) · `technicalindicators` (EMA/RSI/ATR) · `ws` (Binance WebSocket) · чистый HTML/CSS/JS (без сборки).
 
 ## Запуск
 
 ```bash
 npm install
-cp .env.example .env    # добавьте свои ключи Supabase (см. ниже)
-npm run dev             # dev-режим (node --watch, читает .env)
+cp .env.example .env    # заполнить Supabase + Telegram
+npm run dev             # dev (node --watch, читает .env)
 npm start               # продакшен
-npm test                # тесты API
+npm test                # 5 тестов
 ```
 
 - http://localhost:3000 — лендинг.
 - http://localhost:3000/auth — вход / регистрация.
-- http://localhost:3000/terminal — терминал (гейтится по сессии Supabase).
-- `?symbol=BTCUSDT` — предвыбранная пара.
+- http://localhost:3000/signals — дашборд сигналов (гейт по сессии Supabase).
 
-Переменные окружения:
-- `SUPABASE_URL` — URL проекта (из Supabase Dashboard → Settings → API).
-- `SUPABASE_ANON_KEY` — публичный anon-ключ (из той же вкладки). Безопасно отдаётся клиенту.
-- `PORT` — порт сервера (по умолчанию 3000).
-- `TICK_MS` — интервал обновления внутреннего котировочного движка на лендинге (мс, по умолчанию 1000).
+## Переменные окружения
 
-Если `SUPABASE_URL` или `SUPABASE_ANON_KEY` не заданы, сервер пишет предупреждение в консоль, а страница `/auth` показывает баннер «Авторизация не настроена».
+| Имя | Описание | Обязательно |
+|---|---|---|
+| `SUPABASE_URL` | URL проекта из Settings → API | да |
+| `SUPABASE_ANON_KEY` | публичный `anon` ключ | да |
+| `SUPABASE_SERVICE_ROLE_KEY` | приватный `service_role` ключ — нужен серверу для записи сигналов и привязки Telegram | да, иначе журнал in-memory |
+| `TG_BOT_TOKEN` | токен бота из `@BotFather` — для доставки в лс | нет (без него работает только веб) |
+| `SIGNAL_INTERVAL` | таймфрейм стратегии (1m/5m/15m/1h/4h/1d) | нет, по умолчанию `15m` |
+| `SIGNAL_PAIRS` | список пар через запятую | нет, по умолчанию 12 пар |
+| `PORT` | порт сервера | нет, по умолчанию 3000 |
+| `TICK_MS` | интервал обновления движка на лендинге | нет, по умолчанию 1000 |
 
-## <a name="supabase"></a>Настройка Supabase
+## Настройка Supabase
 
-1. **Создайте проект** на [supabase.com](https://supabase.com/) — тариф Free достаточен.
-2. **Settings → API** скопируйте:
-   - *Project URL* → в `SUPABASE_URL`;
-   - *Project API keys → `anon` `public`* → в `SUPABASE_ANON_KEY`.
-3. **Authentication → URL Configuration** добавьте разрешённые redirect-URL:
-   - `http://localhost:3000/auth` (для разработки),
-   - `https://<ваш-домен>/auth` (для продакшена).
-   Эти URL используются при подтверждении email и сбросе пароля.
-4. **Authentication → Providers → Email** (по умолчанию включено). При желании отключите `Confirm email` — тогда регистрация будет завершаться сразу, без клика по письму.
-5. Положите значения в `.env` и перезапустите `npm run dev`.
+1. Создайте проект на [supabase.com](https://supabase.com/).
+2. **Settings → API** скопируйте `URL`, `anon public` и `service_role` в `.env`.
+3. **SQL Editor → New query** вставьте и выполните содержимое `src/signals/schema.sql` — это создаст таблицы `signals` и `user_profile` с RLS и включит Realtime.
+4. **Authentication → URL Configuration** добавьте разрешённые redirect-URL: `http://localhost:3000/auth` и `https://ваш-домен/auth`.
+5. **Authentication → Providers → Email** оставьте включённым.
 
-Пароли и email хранятся на стороне Supabase (bcrypt-хэш пароля, email подтверждается ссылкой). Профилей и дополнительных таблиц приложение не требует.
+## Настройка Telegram
 
-## Терминал
+1. Напишите `@BotFather` → `/newbot` → задайте имя и username → скопируйте токен в `TG_BOT_TOKEN`.
+2. Запустите сервер — в логах появится `[telegram] connected as @ВашБот`.
+3. Пользователи подключают доставку сами: на странице `/signals` жмут «Подключить Telegram», получают 6-значный код, пишут боту `/start КОД`.
+4. Поддерживаемые команды бота: `/start <code>` (привязка), `/pause` (приостановить), `/resume` (возобновить).
 
-- 16 спотовых пар к USDT: BTC, ETH, SOL, BNB, XRP, DOGE, ADA, LTC, LINK, DOT, AVAX, ATOM, TRX, TON, NEAR, SHIB.
-- Свечной график: 1m / 5m / 15m / 1h / 4h / 1D, перекрестие с OHLC-данными.
-- Стакан: топ-20 bids/asks, визуализация объёма; клик по уровню — ставит цену в лимитный ордер.
-- Лента сделок с окраской по тейкеру.
-- Маркет- и лимит-ордера на покупку/продажу, процентные кнопки 25/50/75/100% от баланса.
-- Лимитные ордера исполняются автоматически, когда цена пересекает лимит.
-- Комиссия 0.1% с каждой сделки.
-- Стартовый баланс при создании аккаунта: 10 000 USDT.
-- Вкладки «Открытые ордера / История сделок / Балансы» внизу.
-- Меню аккаунта (клик по аватару в правом углу): «Сбросить портфель» и «Выйти».
+## Как работает движок
 
-Портфель хранится в `localStorage` под ключом `investhouse.wallet.v1.<user_id>`. Переключение аккаунта автоматически подгружает соответствующий портфель.
+```
+Binance WS ──▶ Scheduler ──▶ Engine (EMA+RSI+ATR) ──▶ Journal (Supabase)
+                   │                                      │
+                   ▼                                      ▼
+             Tracker (closes on                     Realtime push ──▶ web UI
+             stop/target/timeout)                   Broadcast     ──▶ Telegram DM
+```
 
-## Как терминал получает реальные данные
+- `src/signals/stream.js` — один shared WS к Binance со списком подписанных пар.
+- `src/signals/engine.js` — стратегия: EMA(fast)×EMA(slow) crossover + RSI-фильтр + ATR-стопы. Профили параметров per-symbol (BTC/ETH/SOL/… — свои). Инвариант `R:R ≥ 1.5` и антидребезг `COOLDOWN_BARS = 4`.
+- `src/signals/scheduler.js` — оркестратор: буферы свечей, вызов `evaluate` на закрытии, запись в журнал, трекер закрытий.
+- `src/signals/journal.js` — Supabase (с service-key) или in-memory fallback.
+- `src/signals/telegram.js` — long-polling бот `getUpdates`, обработка `/start <code>`, рассылка сигналов и закрытий.
+- `src/signals/api.js` — HTTP: `/api/signals/*` публично-читаемый, `/api/me/*` под JWT юзера.
 
-Браузер напрямую обращается к публичным эндпоинтам Binance:
+## Эндпоинты
 
-| Что | Эндпоинт |
-|---|---|
-| свечи (все таймфреймы 1m–1D) | `GET https://api.binance.com/api/v3/klines` |
-| стакан (топ-20 bids/asks) | `GET /api/v3/depth` и WS `<pair>@depth20@100ms` |
-| лента сделок | `GET /api/v3/trades` и WS `<pair>@aggTrade` |
-| 24-часовой тикер | `GET /api/v3/ticker/24hr` и WS `!miniTicker@arr` |
-| живой апдейт свечи | WS `<pair>@kline_<tf>` |
-
-Домены-фолбэки на случай блокировки: `api.binance.com → data-api.binance.vision → api.binance.us` для REST, `wss://stream.binance.com:9443 → wss://stream.binance.com → wss://data-stream.binance.vision` для WS. CSP открывает только эти хосты + Supabase.
+| Метод | Путь | Описание |
+|---|---|---|
+| GET | `/api/signals/symbols` | список отслеживаемых пар |
+| GET | `/api/signals/open` | текущие открытые сигналы |
+| GET | `/api/signals/recent?limit=50` | последние N сигналов |
+| GET | `/api/signals/stats?days=30` | винрейт/avgR/totalR за N дней |
+| GET | `/api/me/profile` | профиль юзера (пары, статус TG) — Bearer JWT |
+| POST | `/api/me/profile/symbols` | обновить список пар |
+| POST | `/api/me/telegram/link` | получить 6-значный код для привязки |
+| POST | `/api/me/telegram/unlink` | отвязать Telegram |
+| GET | `/api/config` | `{ supabase: {url, anonKey} \| null }` для клиента |
+| GET | `/api/health` | uptime |
+| GET | `/api/markets`, `/api/candles/:symbol`, `/api/stream` | движок лендинга (бегущая строка + hero chart) |
 
 ## Структура
 
 ```
-server.js            Express: API + статика + CSP, /api/config, /auth
-src/market.js        внутренний котировочный движок для лендинга
-public/index.html    лендинг
-public/auth.html     вход и регистрация (Supabase)
-public/terminal.html биржевой терминал (реальные данные, свой торговый движок)
-public/security.html страница о данных и безопасности
-public/vendor/       @supabase/supabase-js (UMD-бандл)
-public/js, css       клиентский код и стили
-test/api.test.js     тесты сервера и форма /api/config
+server.js                      Express: статика + API + boot сигнального движка
+src/market.js                  Внутренний котировочный движок для лендинга
+src/signals/
+  engine.js                    Стратегия (EMA+RSI+ATR), backtest, профили per-symbol
+  stream.js                    Shared WS к Binance с reconnect
+  scheduler.js                 Оркестратор: буферы, вызов engine на закрытии, tracker
+  tracker                      ← внутри scheduler: closes signals on stop/target/timeout
+  journal.js                   Supabase (service-key) или in-memory
+  telegram.js                  Long-polling бот, /start-линк, рассылки
+  api.js                       HTTP API: /api/signals/*, /api/me/*
+  schema.sql                   Supabase миграция (signals, user_profile, RLS, realtime)
+public/
+  index.html                   Лендинг
+  auth.html                    Вход и регистрация
+  signals.html                 Дашборд сигналов
+  security.html                О данных и безопасности
+  vendor/supabase.js           @supabase/supabase-js UMD
+  js, css                      Клиент
+test/api.test.js               Серверные тесты + тесты движка
 ```
 
-### Серверные эндпоинты
+## Деплой
 
-| Метод | Путь | Описание |
-|---|---|---|
-| GET | `/api/health` | проверка работоспособности |
-| GET | `/api/config` | `{ supabase: {url, anonKey} \| null }` — передаёт клиенту публичные ключи из env |
-| GET | `/api/markets` | котировки для лендинга (внутренний движок) |
-| GET | `/api/candles/:symbol?limit=200` | история свечей для лендинга (внутренний движок) |
-| GET | `/api/stream` | SSE-поток обновлений (раз в секунду) для лендинга |
-| GET | `/terminal`, `/exchange` | биржевой терминал (требует авторизации на клиенте) |
-| GET | `/auth` | страница входа и регистрации |
+Workflow `.github/workflows/deploy.yml`: пуш в `main` → тесты → SSH-деплой → PM2 restart. Переменные окружения кладутся в `.env` в `APP_DIR` на сервере, PM2 перечитывает при `pm2 reload`.
 
-## Автодеплой
+Альтернатива: `Dockerfile` — Render, Railway, Fly.io подхватывают.
 
-Workflow `.github/workflows/deploy.yml`: на каждый пуш в `main` прогоняются тесты, затем проект деплоится на сервер по SSH и перезапускается через PM2.
+## Про гарантии
 
-Один раз на сервере: установить Node.js 22 и git. В репозитории GitHub → Settings → Secrets and variables → Actions добавить:
+Сигналы — рекомендации, а не гарантия прибыли. Движок **спроектирован** так, чтобы быть в плюсе по мат. ожиданию при винрейте ≥ 55% — это чистая математика рисков (R:R ≥ 1.5). Реальный винрейт показан в разделе «Статистика» на `/signals`. Если на дистанции 100+ сделок он ниже 55%, параметры стратегии надо калибровать (`backtest()` в `engine.js` + редактирование `PROFILES`).
 
-- `SSH_HOST`, `SSH_USER`, `SSH_KEY` (приватный ключ) — обязательно.
-- `SSH_PORT`, `APP_DIR` — по желанию (по умолчанию `22` и `~/investhouse`).
-
-Переменные окружения `SUPABASE_URL` и `SUPABASE_ANON_KEY` задайте на сервере в файле `.env` в `APP_DIR` или через systemd/PM2 unit. PM2 перечитывает окружение при `pm2 reload`.
-
-## Важно
-
-- Терминал работает только когда ваша сеть имеет доступ к Binance (`api.binance.com`, `stream.binance.com`). В некоторых странах эти домены блокируются провайдерами.
-- Авторизация и восстановление пароля требуют настроенного Supabase-проекта (см. раздел «Настройка Supabase»).
-- Торговый движок внутренний: ордера, которые вы создаёте, не отправляются на реальную биржу. Платформа не принимает платежей, не хранит паспортных и платёжных данных.
+Торговля криптовалютами связана с высоким риском. Прошлые результаты не гарантируют будущих. Решение о входе принимает пользователь.

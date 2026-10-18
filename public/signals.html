@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Сигналы — InvestHouse</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/signals.css">
+  <link rel="stylesheet" href="/css/shared.css">
+</head>
+<body data-page="signals">
+<div class="sg">
+
+  <!-- ========== TOP BAR ========== -->
+  <header class="sg-head">
+    <a href="/" class="sg-logo">
+      <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#ffd400" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M6 20v-6m6 6V9m6 11v-8"/></svg></span>
+      <span class="sg-logo-text">InvestHouse</span>
+    </a>
+    <span class="sg-tag">Сигналы · 15m</span>
+
+    <div class="sg-head-stats">
+      <div class="sg-head-stat"><span>Винрейт 30д</span><b id="sg-wr">—</b></div>
+      <div class="sg-head-stat"><span>Средний R</span><b id="sg-ar">—</b></div>
+      <div class="sg-head-stat"><span>Сумма R</span><b id="sg-tr">—</b></div>
+    </div>
+
+    <div class="sg-head-actions">
+      <div class="sg-user" id="sg-user" hidden>
+        <button type="button" class="sg-user-trigger" id="sg-user-trigger" aria-haspopup="menu" aria-expanded="false">
+          <span class="sg-user-avatar" id="sg-user-avatar">—</span>
+          <span class="sg-user-email hide-md" id="sg-user-email">—</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="sg-user-menu" id="sg-user-menu" role="menu" hidden>
+          <div class="sg-user-menu-head"><b id="sg-user-email-full">—</b></div>
+          <button type="button" role="menuitem" id="sg-logout">Выйти</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== MAIN: FEED ========== -->
+  <main class="sg-main">
+    <div class="sg-tabs" id="sg-tabs">
+      <button data-tab="open" class="active">Открытые <span id="sg-open-count">0</span></button>
+      <button data-tab="recent">Последние</button>
+      <button data-tab="history">История</button>
+    </div>
+
+    <div class="sg-feed" id="sg-feed">
+      <div class="sg-empty">Загрузка сигналов…</div>
+    </div>
+
+    <div class="sg-footnote" id="sg-fn">
+      Движок применяет EMA 9/21 × RSI 14 с ATR-стопами. У каждого сигнала R:R ≥ 1.5 — при винрейте 55% ожидание +0.375R на сделку.
+      Сигналы — рекомендации, а не гарантия прибыли. Решение о входе принимаете вы.
+    </div>
+  </main>
+
+  <!-- ========== SIDE PANEL ========== -->
+  <aside class="sg-side">
+    <section class="sg-card">
+      <h3>Мои пары</h3>
+      <p class="sg-sub">Выберите, по каким парам хотите получать сигналы.</p>
+      <div class="sg-pairs" id="sg-pairs"><div class="sg-sub">Загрузка…</div></div>
+      <button class="sg-btn sg-btn-save" id="sg-save-pairs" hidden>Сохранить</button>
+      <div class="sg-msg" id="sg-pairs-msg" hidden></div>
+    </section>
+
+    <section class="sg-card">
+      <h3>Telegram</h3>
+      <p class="sg-sub" id="sg-tg-sub">Подключите чат — сигналы будут приходить в лс.</p>
+      <div id="sg-tg-off" hidden>
+        <button class="sg-btn sg-btn-primary" id="sg-tg-link">Подключить Telegram</button>
+      </div>
+      <div id="sg-tg-code" hidden>
+        <p class="sg-sub">Откройте бота <a id="sg-tg-link-url" href="#" target="_blank" class="sg-link">@…</a> и отправьте команду:</p>
+        <code class="sg-code" id="sg-tg-start">/start —</code>
+        <p class="sg-sub">Код действует до первого использования.</p>
+        <button class="sg-btn sg-btn-ghost" id="sg-tg-cancel">Отменить</button>
+      </div>
+      <div id="sg-tg-on" hidden>
+        <div class="sg-tg-status">
+          <span class="sg-tg-dot"></span>
+          <span>Подключено</span>
+        </div>
+        <button class="sg-btn sg-btn-ghost" id="sg-tg-unlink">Отключить</button>
+      </div>
+      <div class="sg-msg" id="sg-tg-msg" hidden></div>
+    </section>
+
+    <section class="sg-card">
+      <h3>Статистика</h3>
+      <div class="sg-stats-tabs" id="sg-stat-tabs">
+        <button data-days="7" class="">7д</button>
+        <button data-days="30" class="active">30д</button>
+        <button data-days="90" class="">90д</button>
+      </div>
+      <dl class="sg-stats" id="sg-stats">
+        <dt>Сделок</dt><dd id="sg-s-count">—</dd>
+        <dt>Выигр.</dt><dd id="sg-s-wins">—</dd>
+        <dt>Проигр.</dt><dd id="sg-s-loss">—</dd>
+        <dt>Винрейт</dt><dd id="sg-s-wr">—</dd>
+        <dt>Средний R</dt><dd id="sg-s-ar">—</dd>
+        <dt>Сумма R</dt><dd id="sg-s-tr">—</dd>
+      </dl>
+    </section>
+  </aside>
+</div>
+
+<div class="sg-toast" id="sg-toast"></div>
+
+<script src="/vendor/supabase.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/signals.js"></script>
+</body>
+</html>
